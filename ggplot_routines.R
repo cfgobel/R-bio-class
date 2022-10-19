@@ -2,7 +2,8 @@
 
 # download.file("http://r-bio.github.io/data/surveys_complete.csv",
 #               "surveys_complete.csv")
-surveys_complete <- read.csv(file = "surveys_complete.csv")
+surveys_complete <- read.csv(file = "surveys_complete.csv", stringsAsFactors=T)
+
 library(ggplot2)
 
 
@@ -93,7 +94,32 @@ ggplot(subset(surveys_complete, species_id %in% c("DO", "DM", "DS") & sex %in% c
   geom_boxplot(alpha = 0, colour = "black")
 
 ggplot(subset(surveys_complete, species_id %in% c("DO", "DM", "DS") & sex %in% c("F", "M")),
-       aes(x = sex, y = weight,  colour = interaction(sex, species_id))) +
+       aes(x = sex, y = weight,  colour = sex)) +
   facet_wrap( ~ species_id) +
   geom_point(alpha = 0.3, position = "jitter") +
   geom_boxplot(alpha = 0, colour = "black")
+
+
+
+# BARPLOT -----------------------------------------------------------------
+
+ggplot(surveys_complete, aes(species_id)) + geom_bar(stat = "identity")
+
+
+surveys_weights <- with(surveys_complete, tapply(surveys_complete$weight,
+                                                 surveys_complete$species_id, mean))
+surveys_weights <- data.frame(species_id = levels(surveys_complete$species_id),
+                              weight = surveys_weights)
+# surveys_weights <- surveys_weights[complete.cases(surveys_weights),  ]
+
+ggplot(surveys_weights, aes(x = species_id, y = weight)) + geom_bar(stat = "identity")
+
+
+
+surveys_hindfoot <- with(surveys_complete, tapply(surveys_complete$hindfoot_length,
+                                                 surveys_complete$species_id, mean))
+surveys_hindfoot <- data.frame(species_id = levels(surveys_complete$species_id),
+                              hindfoot = surveys_hindfoot)
+# surveys_hindfoot <- surveys_hindfoot[complete.cases(surveys_hindfoot),  ]
+
+ggplot(surveys_hindfoot, aes(x = species_id, y = hindfoot)) + geom_bar(stat = "identity")
